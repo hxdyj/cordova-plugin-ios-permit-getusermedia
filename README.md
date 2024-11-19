@@ -45,6 +45,52 @@ something like this:
 </config-file>
 ```
 
+```js
+document.getElementById('checkMicrophone').addEventListener('click', function () {
+    MediaPermissions.checkMicrophoneAccess(
+        function (status) {
+            console.log('Microphone access status:', status);
+        },
+        function (error) {
+            console.error('Error checking microphone access:', error);
+        }
+    );
+});
+
+document.getElementById('requestMicrophone').addEventListener('click', function () {
+    MediaPermissions.requestMicrophoneAccess(
+        function (granted) {
+            console.log('Microphone access granted:', granted);
+        },
+        function (error) {
+            console.error('Error requesting microphone access:', error);
+        }
+    );
+});
+
+document.getElementById('checkCamera').addEventListener('click', function () {
+    MediaPermissions.checkCameraAccess(
+        function (status) {
+            console.log('Camera access status:', status);
+        },
+        function (error) {
+            console.error('Error checking camera access:', error);
+        }
+    );
+});
+
+document.getElementById('requestCamera').addEventListener('click', function () {
+    MediaPermissions.requestCameraAccess(
+        function (granted) {
+            console.log('Camera access granted:', granted);
+        },
+        function (error) {
+            console.error('Error requesting camera access:', error);
+        }
+    );
+});
+```
+
 ## License
 
 The project is MIT licensed: [MIT](https://opensource.org/licenses/MIT).
