@@ -1,5 +1,6 @@
 #import "PermitGetUserMedia.h"
 #import <WebKit/WebKit.h>
+#import <AVFoundation/AVFoundation.h>
 
 @interface PermitGetUserMediaUIDelegate : NSObject<WKUIDelegate>
 
@@ -28,11 +29,47 @@
                                       type: (WKMediaCaptureType) type
                            decisionHandler: (void (^)(WKPermissionDecision decision)) decisionHandler
 {
-    if ([origin.protocol isEqualToString:@"file"]) {
-        NSLog(@"Supressing media permission request for file origin");
+
+    // Creating a key for each type of media
+    NSString *permissionKey = [NSString stringWithFormat:@"MediaPermissionGranted_%ld", (long)type];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    BOOL isPermissionGranted = [defaults boolForKey:permissionKey];
+
+    AVAuthorizationStatus status;
+        switch (type) {
+            case WKMediaCaptureTypeMicrophone:
+                status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
+                break;
+            case WKMediaCaptureTypeCamera:
+                status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+                break;
+            default:
+                NSLog(@"Unknown media type, prompting user...");
+                decisionHandler(WKPermissionDecisionPrompt);
+                return;
+        }
+
+    // We check if there is already a saved permission
+    if (isPermissionGranted && status == AVAuthorizationStatusAuthorized) {
+        NSLog(@"Media permission already granted for type: %ld", (long)type);
         decisionHandler(WKPermissionDecisionGrant);
     } else {
+        NSLog(@"Requesting media permission for type: %ld", (long)type);
         decisionHandler(WKPermissionDecisionPrompt);
+
+        // We request access if the user agrees
+        [AVCaptureDevice requestAccessForMediaType:(type == WKMediaCaptureTypeMicrophone ? AVMediaTypeAudio : AVMediaTypeVideo)
+                                 completionHandler:^(BOOL granted) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (granted) {
+                    [defaults setBool:YES forKey:permissionKey];
+                    [defaults synchronize];
+                    NSLog(@"Permission granted for type: %ld", (long)type);
+                } else {
+                    NSLog(@"Permission denied for type: %ld", (long)type);
+                }
+            });
+        }];
     }
 }
 
