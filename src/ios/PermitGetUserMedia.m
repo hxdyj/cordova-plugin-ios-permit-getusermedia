@@ -50,7 +50,7 @@
         }
 
     // We check if there is already a saved permission
-    if (isPermissionGranted && status == AVAuthorizationStatusAuthorized) {
+    if (isPermissionGranted || status == AVAuthorizationStatusAuthorized) {
         NSLog(@"Media permission already granted for type: %ld", (long)type);
         decisionHandler(WKPermissionDecisionGrant);
     } else {
