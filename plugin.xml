@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="@tokenized/cordova-plugin-ios-permit-getusermedia"
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-plugin-ios-permit-getusermedia"
         version="1.0.0">
     <name>PermitGetUserMedia</name>
     <description>Cordova plugin allowing getUserMedia camera view without triggering a permission dialog every time
